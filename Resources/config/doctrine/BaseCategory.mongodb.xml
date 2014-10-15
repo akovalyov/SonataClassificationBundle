@@ -13,8 +13,8 @@
         <field name="description"   type="string"   fieldName="description"    />
         <field name="count"         type="int"      fieldName="count"          />
 
-        <field name="createdAt"    type="timestamp"   fieldName="createdAt" />
-        <field name="updatedAt"    type="timestamp"   fieldName="updatedAt" />
+        <field name="createdAt"    type="date"   fieldName="createdAt" />
+        <field name="updatedAt"    type="date"   fieldName="updatedAt" />
 
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="prePersist"/>

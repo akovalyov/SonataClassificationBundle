@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="sonata.classification.manager.category.class">Sonata\ClassificationBundle\Document\CategoryManager</parameter>
+        <parameter key="sonata.classification.manager.tag.class">Sonata\ClassificationBundle\Document\TagManager</parameter>
+        <parameter key="sonata.classification.manager.collection.class">Sonata\ClassificationBundle\Document\CollectionManager</parameter>
+        <parameter key="sonata.classification.manager.context.class">Sonata\ClassificationBundle\Document\ContextManager</parameter>
+    </parameters>
+
+    <services>
+        <service id="sonata.classification.manager.category" class="%sonata.classification.manager.category.class%">
+            <argument>%sonata.classification.manager.category.document%</argument>
+            <argument type="service" id="doctrine_mongodb" />
+            <argument type="service" id="sonata.classification.manager.context"  />
+        </service>
+
+        <service id="sonata.classification.manager.tag" class="%sonata.classification.manager.tag.class%">
+            <argument>%sonata.classification.manager.tag.document%</argument>
+            <argument type="service" id="doctrine_mongodb" />
+        </service>
+
+        <service id="sonata.classification.manager.collection" class="%sonata.classification.manager.collection.class%">
+            <argument>%sonata.classification.manager.collection.document%</argument>
+            <argument type="service" id="doctrine_mongodb" />
+        </service>
+
+        <service id="sonata.classification.manager.context" class="%sonata.classification.manager.context.class%">
+            <argument>%sonata.classification.manager.context.document%</argument>
+            <argument type="service" id="doctrine_mongodb" />
+        </service>
+    </services>
+</container>

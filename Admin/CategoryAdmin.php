@@ -16,7 +16,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
-use Sonata\ClassificationBundle\Entity\ContextManager;
+use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Sonata\ClassificationBundle\Model\ContextInterface;
 
 class CategoryAdmin extends Admin
@@ -28,12 +28,12 @@ class CategoryAdmin extends Admin
     protected $contextManager;
 
     /**
-     * @param string         $code
-     * @param string         $class
-     * @param string         $baseControllerName
-     * @param ContextManager $contextManager
+     * @param string                  $code
+     * @param string                  $class
+     * @param string                  $baseControllerName
+     * @param ContextManagerInterface $contextManager
      */
-    public function __construct($code, $class, $baseControllerName, ContextManager $contextManager)
+    public function __construct($code, $class, $baseControllerName, ContextManagerInterface $contextManager)
     {
         parent::__construct($code, $class, $baseControllerName);
 

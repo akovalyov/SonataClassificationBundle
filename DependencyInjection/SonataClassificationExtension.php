@@ -44,14 +44,22 @@ class SonataClassificationExtension extends Extension
         $bundles = $container->getParameter('kernel.bundles');
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('orm.xml');
+        if (!in_array(strtolower($config['db_driver']), array('doctrine_orm', 'doctrine_mongodb', 'doctrine_phpcr'))) {
+            throw new \InvalidArgumentException(sprintf('SonataClassificationBundle - Invalid db driver "%s".', $config['db_driver']));
+        }
+        if(in_array($config['db_driver'], array('doctrine_orm', 'doctrine_mongodb'))){
+            $loader->load(sprintf('%1$s/%1$s.xml', $config['db_driver']));
+            $loader->load(sprintf('%s/api_form.xml', $config['db_driver']));
+        }
+        else{
+            throw new \InvalidArgumentException(sprintf('SonataClassificationBundle - db driver "%s" is not supported yet.', $config['db_driver']));
+        }
         $loader->load('form.xml');
         $loader->load('serializer.xml');
         $loader->load('api_controllers.xml');
-        $loader->load('api_form.xml');
 
         if (isset($bundles['SonataAdminBundle'])) {
-            $loader->load('admin.xml');
+            $loader->load(sprintf('%1$s/%1$s_admin.xml', $config['db_driver']));
         }
 
         $this->registerDoctrineMapping($config, $container);
@@ -65,17 +73,26 @@ class SonataClassificationExtension extends Extension
      */
     public function configureClass($config, ContainerBuilder $container)
     {
+        if('doctrine_orm' === $config['db_driver']){
+            $postfix = 'entity';
+        }
+        elseif('doctrine_mongodb' === $config['db_driver']){
+            $postfix = 'document';
+        }
+        elseif('doctrine_phpcr' === $config['db_driver']){
+            throw new \InvalidArgumentException(sprintf('SonataClassificationBundle - db driver "%s" is not supported yet.', $config['db_driver']));
+        }
         // admin configuration
-        $container->setParameter('sonata.classification.admin.tag.entity',        $config['class']['tag']);
-        $container->setParameter('sonata.classification.admin.category.entity',   $config['class']['category']);
-        $container->setParameter('sonata.classification.admin.collection.entity', $config['class']['collection']);
-        $container->setParameter('sonata.classification.admin.context.entity',    $config['class']['context']);
+        $container->setParameter(sprintf('sonata.classification.admin.tag.%s', $postfix),        $config['class']['tag']);
+        $container->setParameter(sprintf('sonata.classification.admin.category.%s', $postfix),   $config['class']['category']);
+        $container->setParameter(sprintf('sonata.classification.admin.collection.%s', $postfix), $config['class']['collection']);
+        $container->setParameter(sprintf('sonata.classification.admin.context.%s', $postfix),    $config['class']['context']);
 
         // manager configuration
-        $container->setParameter('sonata.classification.manager.tag.entity',        $config['class']['tag']);
-        $container->setParameter('sonata.classification.manager.category.entity',   $config['class']['category']);
-        $container->setParameter('sonata.classification.manager.collection.entity', $config['class']['collection']);
-        $container->setParameter('sonata.classification.manager.context.entity',    $config['class']['context']);
+        $container->setParameter(sprintf('sonata.classification.manager.tag.%s', $postfix),        $config['class']['tag']);
+        $container->setParameter(sprintf('sonata.classification.manager.category.%s', $postfix),   $config['class']['category']);
+        $container->setParameter(sprintf('sonata.classification.manager.collection.%s', $postfix), $config['class']['collection']);
+        $container->setParameter(sprintf('sonata.classification.manager.context.%s', $postfix),    $config['class']['context']);
     }
 
     /**

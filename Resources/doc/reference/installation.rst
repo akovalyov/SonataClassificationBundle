@@ -40,6 +40,7 @@ Installation
     # sonata_classification.yml
 
     sonata_classification:
+        db_driver: doctrine_orm # or doctrine_mongodb, doctrine_phpcr
         # ...
 
     doctrine:

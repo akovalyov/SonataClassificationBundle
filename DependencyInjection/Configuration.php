@@ -30,6 +30,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('db_driver')->isRequired()->end()
                 ->arrayNode('class')
                     ->addDefaultsIfNotSet()
                     ->children()

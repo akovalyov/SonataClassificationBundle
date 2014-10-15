@@ -10,8 +10,8 @@
         <field name="enabled"       type="boolean"      fieldName="enabled" />
         <field name="slug"          type="string"       fieldName="slug"    />
 
-        <field name="createdAt"     type="timestamp"    fieldName="createdAt" />
-        <field name="updatedAt"     type="timestamp"    fieldName="updatedAt" />
+        <field name="createdAt"     type="date"    fieldName="createdAt" />
+        <field name="updatedAt"     type="date"    fieldName="updatedAt" />
 
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="prePersist"/>

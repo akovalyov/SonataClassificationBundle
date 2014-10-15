@@ -19,12 +19,12 @@ use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
 
 use Sonata\ClassificationBundle\Model\ContextInterface;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
-use Sonata\CoreBundle\Model\BaseEntityManager;
+use Sonata\ClassificationBundle\Model\CategoryManager as BaseCategoryManager;
 
 use Sonata\DatagridBundle\Pager\Doctrine\Pager;
 use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
 
-class CategoryManager extends BaseEntityManager implements CategoryManagerInterface
+class CategoryManager extends BaseCategoryManager implements CategoryManagerInterface
 {
     /**
      * @var array
@@ -32,19 +32,6 @@ class CategoryManager extends BaseEntityManager implements CategoryManagerInterf
     protected $categories;
 
     protected $contextManager;
-
-    /**
-     * @param string                  $class
-     * @param ManagerRegistry         $registry
-     * @param ContextManagerInterface $contextManager
-     */
-    public function __construct($class, ManagerRegistry $registry, ContextManagerInterface $contextManager)
-    {
-        parent::__construct($class, $registry);
-
-        $this->contextManager = $contextManager;
-        $this->categories = array();
-    }
 
     /**
      * Returns a pager to iterate over the root category
@@ -97,20 +84,6 @@ class CategoryManager extends BaseEntityManager implements CategoryManagerInterf
     }
 
     /**
-     * @param ContextInterface $context
-     *
-     * @return CategoryInterface
-     */
-    public function getRootCategory($context = null)
-    {
-        $context = $this->getContext($context);
-
-        $this->loadCategories($context);
-
-        return $this->categories[$context->getId()][0];
-    }
-
-    /**
      * @return CategoryInterface[]
      */
     public function getRootCategories($loadChildren = true)
@@ -131,50 +104,6 @@ class CategoryManager extends BaseEntityManager implements CategoryManagerInterf
         }
 
         return $categories;
-    }
-
-    /**
-     * @param ContextInterface $context
-     *
-     * @return array
-     */
-    public function getCategories($context = null)
-    {
-        $context = $this->getContext($context);
-
-        $this->loadCategories($context);
-
-        return $this->categories[$context->getId()];
-    }
-
-    /**
-     * @param $context
-     *
-     * @return ContextInterface
-     */
-    private function getContext($contextCode)
-    {
-        if ($contextCode === null) {
-            $contextCode = ContextInterface::DEFAULT_CONTEXT;
-        }
-
-        if ($contextCode instanceof ContextInterface) {
-            return $contextCode;
-        }
-
-        $context = $this->contextManager->find($contextCode);
-
-        if (!$context instanceof ContextInterface) {
-            $context = $this->contextManager->create();
-
-            $context->setId($contextCode);
-            $context->setName($contextCode);
-            $context->setEnabled(true);
-
-            $this->contextManager->save($context);
-        }
-
-        return $context;
     }
 
     /**
@@ -229,36 +158,5 @@ class CategoryManager extends BaseEntityManager implements CategoryManagerInterf
         $this->categories[$context->getId()] = array(
             0 => $root
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPager(array $criteria, $page, $limit = 10, array $sort = array())
-    {
-        $parameters = array();
-
-        $query = $this->getRepository()
-            ->createQueryBuilder('c')
-            ->select('c');
-
-        $query->andWhere('c.context = :context');
-
-        $parameters['context'] = isset($criteria['context']) ? $criteria['context'] : ContextInterface::DEFAULT_CONTEXT;
-
-        if (isset($criteria['enabled'])) {
-            $query->andWhere('c.enabled = :enabled');
-            $parameters['enabled'] = (bool) $criteria['enabled'];
-        }
-
-        $query->setParameters($parameters);
-
-        $pager = new Pager();
-        $pager->setMaxPerPage($limit);
-        $pager->setQuery(new ProxyQuery($query));
-        $pager->setPage($page);
-        $pager->init();
-
-        return $pager;
     }
 }
